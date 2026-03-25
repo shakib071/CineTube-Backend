@@ -1,0 +1,44 @@
+model Purchase {
+  id               String         @id @default(uuid())
+  type             PurchaseType
+  amount           Float
+  status           PaymentStatus  @default(PENDING)
+  transactionId    String?
+  createdAt        DateTime       @default(now())
+  expiresAt        DateTime?
+  paymentGateway   PaymentGateway
+  sessionKey       String?
+  validationId     String?
+  stripePaymentId  String?
+  stripeCustomerId String?
+  currency         Currency      @default(BDT)
+
+  userId  String
+  user    User   @relation(fields: [userId], references: [id])
+
+  mediaId String?
+  media   Media?  @relation(fields: [mediaId], references: [id])
+}
+
+enum PurchaseType {
+  BUY
+  RENT
+  SUBSCRIPTION
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum PaymentGateway {
+  SSLCOMMERZ
+  STRIPE
+}
+
+enum Currency {
+  BDT
+  USD
+}

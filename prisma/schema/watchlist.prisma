@@ -1,0 +1,12 @@
+model Watchlist {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  userId  String
+  user    User   @relation(fields: [userId], references: [id])
+
+  mediaId String
+  media   Media  @relation(fields: [mediaId], references: [id])
+
+  @@unique([userId, mediaId])
+}

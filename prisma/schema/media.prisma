@@ -1,0 +1,45 @@
+model Media {
+  id            String      @id @default(uuid())
+  title         String
+  synopsis      String?
+  genre         String[]  @default([])
+  releaseYear   Int?
+  releaseMonth  Int?
+  director      String?
+  cast          String[]  @default([])
+  platform      Platform  @default(OTHER)
+  videoUrl      String?
+  thumbnailUrl  String?
+  trailerUrl    String?
+  type          MediaType 
+  pricingType   PricingType @default(FREE)
+  price         Float?
+  isPublished   Boolean     @default(false)
+  isFeatured    Boolean     @default(false)
+  averageRating Float?
+  totalReviews  Int         @default(0)
+  createdAt     DateTime    @default(now())
+
+  reviews   Review[]
+  purchases Purchase[]
+  watchlist Watchlist[]
+}
+
+enum MediaType {
+  MOVIE
+  SERIES
+}
+
+enum PricingType {
+  FREE
+  PREMIUM
+}
+
+enum Platform {
+  NETFLIX
+  DISNEY_PLUS
+  YOUTUBE
+  AMAZON_PRIME
+  HBO
+  OTHER
+}

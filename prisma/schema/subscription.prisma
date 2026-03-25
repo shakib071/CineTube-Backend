@@ -1,0 +1,22 @@
+model Subscription {
+  id        String             @id @default(uuid())
+  plan      SubscriptionPlan   @default(FREE)
+  startTime DateTime           @default(now())
+  endDate   DateTime
+  status    SubscriptionStatus @default(ACTIVE)
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+enum SubscriptionPlan {
+  MONTHLY
+  YEARLY
+  FREE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
