@@ -9,6 +9,7 @@ interface EnvConfig {
     BETTER_AUTH_URL: string,
     GOOGLE_CLIENT_ID: string,
     GOOGLE_CLIENT_SECRET: string,
+    GOOGLE_CALLBACK_URL: string,
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -20,6 +21,7 @@ const loadEnvVariables = (): EnvConfig => {
         "BETTER_AUTH_URL",
         "GOOGLE_CLIENT_ID",
         "GOOGLE_CLIENT_SECRET",
+        "GOOGLE_CALLBACK_URL",
     ]
 
     requiredEnvVariables?.forEach((envVariable) => {
@@ -35,6 +37,7 @@ const loadEnvVariables = (): EnvConfig => {
         BETTER_AUTH_URL: process.env.BETTER_AUTH_URL!,
         GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID!,
         GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET!,
+        GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL!,
     }
 };
 
