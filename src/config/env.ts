@@ -24,6 +24,9 @@ interface EnvConfig {
         SMTP_FROM: string
     },
     FRONTEND_URL: string;
+    ADMIN_NAME: string;
+    ADMIN_EMAIL: string;
+    ADMIN_PASSWORD: string;
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -48,6 +51,9 @@ const loadEnvVariables = (): EnvConfig => {
         "BETTER_AUTH_SESSION_TOKEN_EXPIRES_IN",
         "BETTER_AUTH_SESSION_TOKEN_UPDATE_AGE",
         "FRONTEND_URL",
+        "ADMIN_NAME",
+        "ADMIN_EMAIL",
+        "ADMIN_PASSWORD",
 
 
     ]
@@ -80,6 +86,9 @@ const loadEnvVariables = (): EnvConfig => {
         BETTER_AUTH_SESSION_TOKEN_EXPIRES_IN: process.env.BETTER_AUTH_SESSION_TOKEN_EXPIRES_IN!,
         BETTER_AUTH_SESSION_TOKEN_UPDATE_AGE: process.env.BETTER_AUTH_SESSION_TOKEN_UPDATE_AGE!,
         FRONTEND_URL: process.env.FRONTEND_URL!,
+        ADMIN_NAME: process.env.ADMIN_NAME!,
+        ADMIN_EMAIL: process.env.ADMIN_EMAIL!,
+        ADMIN_PASSWORD: process.env.ADMIN_PASSWORD!,
     }
 };
 
