@@ -39,6 +39,7 @@ enum UserStatus {
   ACTIVE
   SUSPENDED
   BLOCKED
+  DELETED
 }
 
 model Session {
