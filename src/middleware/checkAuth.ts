@@ -47,7 +47,7 @@ export const checkAuth = (...authRoles: Role[]) => async (req: Request, res: Res
                     res.setHeader('X-Time-Remaining', timeRemaining.toString());
 
                     console.log("Session Expiring Soon!!");
-                }
+                } 
 
                 if (user.status === UserStatus.BLOCKED || user.status === UserStatus.DELETED || user.status === UserStatus.SUSPENDED) {
                     throw new AppError(status.UNAUTHORIZED, 'Unauthorized access! User is not active.');
