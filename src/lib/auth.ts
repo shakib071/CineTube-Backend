@@ -53,23 +53,23 @@ export const auth = betterAuth({
             role: {
                 type: "string",
                 required:true,
-                default: Role.USER,
+                defaultValue: Role.USER,
             },
             status: {
                 type: "string",
                 required:true,
-                default: UserStatus.ACTIVE,
+                defaultValue: UserStatus.ACTIVE,
             },
             isDeleted: {
                 type: "boolean",
                 required:true,
-                default: false,
+                defaultValue: false,
             },
             
             deletedAt: {
                 type: "date",
                 required:false,
-                default: null,
+                defaultValue: null,
             },
         }
     },
@@ -142,13 +142,13 @@ export const auth = betterAuth({
         }
     },
 
-    redirectUrls:{
+    redirectURLs:{
         signIn: `${envVars.BETTER_AUTH_URL}/api/v1/auth/google/success`,
 
     },
 
     trustedOrigins: [
-        envVars.BETTER_AUTH_URL || "http://localhost:3000",envVars.FRONTEND_URL
+        envVars.BETTER_AUTH_URL || "http://localhost:5000",envVars.FRONTEND_URL
     ],
     advanced: {
         // disableCSRFCheck: true,

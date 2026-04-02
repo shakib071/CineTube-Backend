@@ -6,8 +6,6 @@ import { envVars } from "../../config/env";
 import { authService } from "./auth.service";
 import { tokenUtils } from "../../utils/token";
 import { sendResponse } from "../../shared/sendResponse";
-import { log } from "node:console";
-import { be } from "zod/v4/locales";
 import { CookieUtils } from "../../utils/cookie";
 import AppError from "../../errorHelpers/AppError";
 import { auth } from "../../lib/auth";
@@ -161,17 +159,66 @@ const getNewToken = catchAsync(
 
 
 const googleLogin = catchAsync((req: Request, res: Response) => {
-    const redirectPath = req.query.redirect || "/dashboard";
-
-    const encodedRedirectPath = encodeURIComponent(redirectPath as string);
-
+    const redirectPath = (req.query.redirect as string) || "/dashboard";
+    const encodedRedirectPath = encodeURIComponent(redirectPath);
     const callbackURL = `${envVars.BETTER_AUTH_URL}/api/v1/auth/google/success?redirect=${encodedRedirectPath}`;
 
-    res.render("googleRedirect", {
-        callbackURL : callbackURL,
-        betterAuthUrl : envVars.BETTER_AUTH_URL,
-    })
-})
+    const html = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Google Login</title>
+        </head>
+        <body>
+            <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+                <div style="text-align: center;">
+                    <p>Redirecting To Google...</p>
+                    
+                </div>
+            </div>
+
+            <script>
+                const callbackURL = "${callbackURL}";
+                const betterAuthUrl = "${envVars.BETTER_AUTH_URL}";
+
+                async function signInWithGoogle() {
+                    try {
+                        const response = await fetch(betterAuthUrl + "/api/auth/sign-in/social", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            credentials: "include",
+                            body: JSON.stringify({
+                                provider: "google",
+                                callbackURL: callbackURL
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if(data.url){
+                            window.location.href = data.url;
+                        } else {
+                            document.body.innerHTML = '<div style="text-align: center; padding: 50px;"><p>Error: Could not get Google OAuth URL</p></div>';
+                        }
+                    } catch (error) {
+                        document.body.innerHTML = '<div style="text-align: center; padding: 50px;"><p>Error: ' + error.message + '</p></div>';
+                    }
+                }
+
+                // Auto-trigger on page load
+                window.onload = signInWithGoogle;
+            </script>
+        </body>
+        </html>
+    `;
+
+    const html2 = 
+    res.send(html);
+});
 
 
 const googleLoginSuccess = catchAsync(async (req: Request, res: Response) => {

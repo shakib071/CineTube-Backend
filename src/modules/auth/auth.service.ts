@@ -258,26 +258,30 @@ const getNewToken = async (refreshToken : string, sessionToken : string) => {
 }
 
 
-const googleLoginSuccess = async (session : Record<string, any>) =>{
-   
-    const accessToken = tokenUtils.getAccessToken({
-        userId: session.user.id,
-        role: session.user.role,
-        name: session.user.name,
-    });
+// ✅ CineTube version — no patient profile needed
+const googleLoginSuccess = async (session: Record<string, any>) => {
+  const accessToken = tokenUtils.getAccessToken({
+    userId: session.user.id,
+    role: session.user.role,
+    name: session.user.name,
+    email: session.user.email,
+    status: session.user.status,
+    isDeleted: session.user.isDeleted,
+    emailVarified: session.user.emailVerified,
+  });
 
-    const refreshToken = tokenUtils.getRefreshToken({
-        userId: session.user.id,
-        role: session.user.role,
-        name: session.user.name,
-    });
+  const refreshToken = tokenUtils.getRefreshToken({
+    userId: session.user.id,
+    role: session.user.role,
+    name: session.user.name,
+    email: session.user.email,
+    status: session.user.status,
+    isDeleted: session.user.isDeleted,
+    emailVarified: session.user.emailVerified,
+  });
 
-    return {
-        accessToken,
-        refreshToken,
-    }
-}
-
+  return { accessToken, refreshToken };
+};
 
 
 
