@@ -29,7 +29,7 @@ const storage = new CloudinaryStorage({
 
 
         return {
-            folder : `ph-healthcare/${folder}`,
+            folder : `cinetube/${folder}`,
             public_id: uniqueName,
             resource_type : "auto"
         }
