@@ -1,11 +1,6 @@
 Media CRUD  →  User Management  →  Reviews  →  Watchlist  →  Payment
 
 
-Phase 2 — User Management (admin dashboard)
-4. Admin user management routes
-   □ GET    /admin/users         → all users with pagination
-   □ PATCH  /admin/users/:id     → block/unblock user
-   □ DELETE /admin/users/:id     → soft delete user
 
 Phase 3 — Review Moderation
 5. Review module
