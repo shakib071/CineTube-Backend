@@ -34,10 +34,13 @@ const getAllMedia = async (queryParams: IQueryParams) => {
     .search()
     .filter()
     .sort()
-    .paginate()
-    .execute();
+    .paginate();
 
-  return result;
+    if (queryParams.genre) {
+      result.where({ genre: { has: queryParams.genre } });
+  }
+
+  return result.execute();
 };
 
 const getMediaById = async (id: string) => {
