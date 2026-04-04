@@ -1,0 +1,48 @@
+Media CRUD  →  User Management  →  Reviews  →  Watchlist  →  Payment
+
+
+Phase 2 — User Management (admin dashboard)
+4. Admin user management routes
+   □ GET    /admin/users         → all users with pagination
+   □ PATCH  /admin/users/:id     → block/unblock user
+   □ DELETE /admin/users/:id     → soft delete user
+
+Phase 3 — Review Moderation
+5. Review module
+   □ POST   /reviews           → user creates review
+   □ GET    /reviews           → all reviews (admin)
+   □ PATCH  /reviews/:id       → admin approve/reject
+   □ DELETE /reviews/:id       → admin deletes
+
+6. Like & Comment routes
+   □ POST   /reviews/:id/like     → toggle like
+   □ POST   /reviews/:id/comment  → add comment
+   □ DELETE /comments/:id         → delete comment
+
+Phase 4 — Watchlist
+7. Watchlist routes
+   □ POST   /watchlist/:mediaId   → add to watchlist
+   □ DELETE /watchlist/:mediaId   → remove from watchlist
+   □ GET    /watchlist            → get user watchlist
+
+Phase 5 — Payment & Subscription
+
+8. Subscription routes
+   □ POST /subscription/stripe    → create Stripe session
+   □ POST /subscription/ssl       → SSLCommerz payment
+   □ POST /subscription/webhook   → Stripe webhook
+
+9. Purchase routes (buy/rent individual movie)
+   □ POST /purchase/:mediaId      → buy or rent
+   □ GET  /purchase               → purchase history
+
+Phase 6 — Newsletter & Stats
+
+10. Newsletter
+    □ POST /newsletter             → subscribe email
+
+11. Admin stats
+    □ GET /admin/stats             → total users, media, revenue
+
+
+

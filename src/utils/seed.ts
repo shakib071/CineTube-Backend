@@ -25,7 +25,7 @@ export const seedAdmin = async () => {
                 role : Role.ADMIN,
                 status : "ACTIVE",
                 isDeleted : false,
-                rememberMe : false,
+                
             }
         })
 
@@ -70,3 +70,5 @@ export const seedAdmin = async () => {
         })
     }
 }
+
+seedAdmin();
