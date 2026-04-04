@@ -13,7 +13,6 @@ const getAllUsers = async (queryParams: IQueryParams) => {
     .filter()
     .sort()
     .paginate()
-    .where({ role: "USER"})
     .execute();
 
   return result;
