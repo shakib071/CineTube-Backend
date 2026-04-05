@@ -17,6 +17,19 @@ const createReview = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// PUBLIC — for the detail page, no auth required
+const getPublicReviews = catchAsync(async (req: Request, res: Response) => {
+  const result = await reviewService.getPublicReviews(req.query as IQueryParams);
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Reviews fetched successfully",
+    data: result.data,
+    meta: result.meta,
+  });
+});
+
+// ADMIN — all reviews with any filter
 const getAllReviews = catchAsync(async (req: Request, res: Response) => {
   const result = await reviewService.getAllReviews(req.query as IQueryParams);
   sendResponse(res, {
@@ -72,9 +85,9 @@ const addComment = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 export const reviewController = {
   createReview,
+  getPublicReviews,
   getAllReviews,
   approveRejectReview,
   deleteReview,

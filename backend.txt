@@ -1,19 +1,20 @@
 Media CRUD  →  User Management  →  Reviews  →  Watchlist  →  Payment
 
 
+// Done .. need testing
+{
+   Phase 3 — Review Moderation
+   5. Review module
+      □ POST   /reviews           → user creates review
+      □ GET    /reviews           → all reviews (admin)
+      □ PATCH  /reviews/:id       → admin approve/reject
+      □ DELETE /reviews/:id       → admin deletes
 
-Phase 3 — Review Moderation
-5. Review module
-   □ POST   /reviews           → user creates review
-   □ GET    /reviews           → all reviews (admin)
-   □ PATCH  /reviews/:id       → admin approve/reject
-   □ DELETE /reviews/:id       → admin deletes
-
-6. Like & Comment routes
-   □ POST   /reviews/:id/like     → toggle like
-   □ POST   /reviews/:id/comment  → add comment
-   □ DELETE /comments/:id         → delete comment
-
+   6. Like & Comment routes
+      □ POST   /reviews/:id/like     → toggle like
+      □ POST   /reviews/:id/comment  → add comment
+      □ DELETE /comments/:id         → delete comment
+}
 
 
 

@@ -39,6 +39,55 @@ const createReview = async (user: IRequestUser, payload: ICreateReviewPayload) =
   return review;
 };
 
+const getPublicReviews = async (queryParams: IQueryParams) => {
+  const page = Number(queryParams.page) || 1;
+  const limit = Number(queryParams.limit) || 5;
+  const skip = (page - 1) * limit;
+
+  const where: Record<string, unknown> = {
+    isPublished: true, // only approved reviews
+  };
+
+  if (queryParams.mediaId) where.mediaId = queryParams.mediaId;
+
+  const [total, data] = await Promise.all([
+    prisma.review.count({ where }),
+    prisma.review.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: { select: { id: true, name: true, image: true } },
+        likes: { select: { id: true, userId: true } },
+        comments: {
+          where: { parentId: null },
+          orderBy: { createdAt: "asc" },
+          include: {
+            user: { select: { id: true, name: true, image: true } },
+            replies: {
+              orderBy: { createdAt: "asc" },
+              include: {
+                user: { select: { id: true, name: true, image: true } },
+              },
+            },
+          },
+        },
+      },
+    }),
+  ]);
+
+  return {
+    data,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
 const getAllReviews = async (queryParams: IQueryParams) => {
   const result = await new QueryBuilder(prisma.review, queryParams, {
     searchableFields: ["review_content"],
@@ -165,10 +214,10 @@ const addComment = async (
 
 export const reviewService = {
   createReview,
+  getPublicReviews,
   getAllReviews,
   approveRejectReview,
   deleteReview,
   toggleLike,
   addComment,
- 
 };

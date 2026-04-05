@@ -258,7 +258,6 @@ const getNewToken = async (refreshToken : string, sessionToken : string) => {
 }
 
 
-// ✅ CineTube version — no patient profile needed
 const googleLoginSuccess = async (session: Record<string, any>) => {
   const accessToken = tokenUtils.getAccessToken({
     userId: session.user.id,

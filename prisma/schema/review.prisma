@@ -1,6 +1,6 @@
 model Review {
   id             String       @id @default(uuid())
-  rating         BigInt
+  rating         Int
   review_content String
   hasSpoiler     Boolean      @default(false)
   tags           String[]     @default([])

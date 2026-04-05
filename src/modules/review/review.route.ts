@@ -11,8 +11,15 @@ import {
 
 const router = Router();
 
-// ── Reviews ───────────────────────────────────────────────────────────────────
+// ── PUBLIC — fetch published reviews for a media (used by detail page) ────────
+// GET /api/v1/reviews/public?mediaId=xxx&page=1&limit=5
+router.get("/public", reviewController.getPublicReviews);
 
+// ── Admin — all reviews with filters ─────────────────────────────────────────
+// GET /api/v1/reviews?status=PENDING&page=1&limit=10
+router.get("/", checkAuth(Role.ADMIN), reviewController.getAllReviews);
+
+// ── User — create review ──────────────────────────────────────────────────────
 // POST /api/v1/reviews
 router.post(
   "/",
@@ -21,10 +28,8 @@ router.post(
   reviewController.createReview
 );
 
-// GET /api/v1/reviews?status=PENDING&page=1&limit=10
-router.get("/", checkAuth(Role.ADMIN), reviewController.getAllReviews);
-
-// PATCH /api/v1/reviews/:id  body: { status: "APPROVED" | "REJECTED" }
+// ── Admin — approve/reject ────────────────────────────────────────────────────
+// PATCH /api/v1/reviews/:id
 router.patch(
   "/:id",
   checkAuth(Role.ADMIN),
@@ -32,24 +37,21 @@ router.patch(
   reviewController.approveRejectReview
 );
 
+// ── Admin — delete review ─────────────────────────────────────────────────────
 // DELETE /api/v1/reviews/:id
 router.delete("/:id", checkAuth(Role.ADMIN), reviewController.deleteReview);
 
-// ── Likes ─────────────────────────────────────────────────────────────────────
-
+// ── Auth — toggle like ────────────────────────────────────────────────────────
 // POST /api/v1/reviews/:id/like
 router.post("/:id/like", checkAuth(Role.USER, Role.ADMIN), reviewController.toggleLike);
 
-// ── Comments ──────────────────────────────────────────────────────────────────
-
-// POST /api/v1/reviews/:id/comment   body: { content, parentId? }
+// ── Auth — add comment ────────────────────────────────────────────────────────
+// POST /api/v1/reviews/:id/comment
 router.post(
   "/:id/comment",
   checkAuth(Role.USER, Role.ADMIN),
   validateRequest(createCommentZodSchema),
   reviewController.addComment
 );
-
-
 
 export const reviewRoutes = router;
