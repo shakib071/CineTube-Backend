@@ -14,6 +14,9 @@ Phase 3 — Review Moderation
    □ POST   /reviews/:id/comment  → add comment
    □ DELETE /comments/:id         → delete comment
 
+
+
+
 Phase 4 — Watchlist
 7. Watchlist routes
    □ POST   /watchlist/:mediaId   → add to watchlist
