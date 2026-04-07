@@ -13,6 +13,7 @@ import { globalErrorHandler } from "./middleware/globalErrorHandler";
 import { notFound } from "./middleware/notFound";
 import { indexRoutes } from "./routes";
 import path from "path";
+import { subscriptionController } from "./modules/subscription/subscription.controller";
 
 const app: Application = express();
 app.set("query parser", (str : string) => qs.parse(str));
@@ -31,6 +32,14 @@ app.use(cors({
 
 
 app.use("/api/auth", toNodeHandler(auth))
+
+// ── Stripe webhook — raw body MUST be before express.json() ──────────────────
+// Stripe signature verification requires the raw Buffer, not the parsed body.
+app.post(
+  "/api/v1/subscription/webhook",
+  express.raw({ type: "application/json" }),
+  subscriptionController.stripeWebhook
+);
 
 // Enable URL-encoded form data parsing
 app.use(express.urlencoded({ extended: true }));

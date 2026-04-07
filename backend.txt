@@ -13,6 +13,9 @@ Phase 5 — Payment & Subscription
    □ POST /purchase/:mediaId      → buy or rent
    □ GET  /purchase               → purchase history
 
+
+
+
 Phase 6 — Newsletter & Stats
 
 10. Newsletter

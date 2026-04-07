@@ -37,6 +37,8 @@ interface EnvConfig {
         STRIPE_WEBHOOK_SECRET: string;
     },
     NODE_ENV: string;
+    SSLCZ_STORE_ID: string;
+    SSLCZ_STORE_PASSWD: string;
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -70,6 +72,8 @@ const loadEnvVariables = (): EnvConfig => {
         "STRIPE_SECRET_KEY",
         "STRIPE_WEBHOOK_SECRET",
         "NODE_ENV",
+        "SSLCZ_STORE_ID",
+        "SSLCZ_STORE_PASSWD",
     ]
 
     requiredEnvVariables?.forEach((envVariable) => {
@@ -113,6 +117,8 @@ const loadEnvVariables = (): EnvConfig => {
             STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET!,
         },
         NODE_ENV: process.env.NODE_ENV!,
+        SSLCZ_STORE_ID: process.env.SSLCZ_STORE_ID!,
+        SSLCZ_STORE_PASSWD: process.env.SSLCZ_STORE_PASSWD!,
     }
 };
 
