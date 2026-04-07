@@ -34,6 +34,33 @@ const createStripeSubscriptionSession = async (
   user: IRequestUser,
   plan: SubscriptionPlan
 ) => {
+
+    const activeSub = await prisma.subscription.findFirst({
+      where: {
+        userId: user.userId,
+        status: "ACTIVE",
+        endDate: { gt: new Date() },
+      },
+    });
+
+    if (activeSub) {
+      throw new AppError(status.CONFLICT, "You already have an active subscription");
+    }
+
+    const existing = await prisma.purchase.findFirst({
+    where: {
+      userId: user.userId,
+      type: "SUBSCRIPTION",
+      status: PaymentStatus.SUCCESS,
+    },
+  });
+
+    if (existing) {
+      throw new AppError(
+        status.CONFLICT,
+        "You already have a pending subscription payment"
+      );
+    }
   if (plan === "FREE") {
     throw new AppError(status.BAD_REQUEST, "Cannot create a Stripe session for the free plan");
   }
@@ -96,14 +123,18 @@ const handleStripeWebhook = async (rawBody: Buffer, sig: string) => {
       sig,
       envVars.STRIPE.STRIPE_WEBHOOK_SECRET
     );
+    console.log(`Stripe webhook received: ${event.type}`);
   } catch {
     throw new AppError(status.BAD_REQUEST, "Invalid Stripe webhook signature");
   }
+
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const meta    = session.metadata ?? {};
 
+    console.log(`Stripe session completed: ${session.id}`);
+    console.log({meta})
     if (meta.type === "SUBSCRIPTION") {
       await _activateSubscription(
         meta.userId as string,
@@ -145,34 +176,61 @@ const _activateSubscription = async (
   const months = plan === "YEARLY" ? 12 : 1;
   const endDate = addMonths(new Date(), months);
 
-  await prisma.$transaction([
-    // Mark purchase SUCCESS
-    prisma.purchase.update({
-      where: { id: purchaseId },
-      data: {
-        status: PaymentStatus.SUCCESS,
-        transactionId,
-        expiresAt: endDate,
-        ...(stripeCustomerId && { stripeCustomerId }),
-      },
-    }),
-    // Upsert subscription
-    prisma.subscription.upsert({
-      where: { userId },
-      create: {
-        userId,
-        plan,
-        endDate,
-        status: SubscriptionStatus.ACTIVE,
-      },
-      update: {
-        plan,
-        startTime: new Date(),
-        endDate,
-        status: SubscriptionStatus.ACTIVE,
-      },
-    }),
-  ]);
+  // await prisma.$transaction([
+  //   // Mark purchase SUCCESS
+  //   prisma.purchase.update({
+  //     where: { id: purchaseId },
+  //     data: {
+  //       status: PaymentStatus.SUCCESS,
+  //       transactionId,
+  //       expiresAt: endDate,
+  //       ...(stripeCustomerId && { stripeCustomerId }),
+  //     },
+  //   }),
+  //   // Upsert subscription
+  //   prisma.subscription.upsert({
+  //     where: { userId },
+  //     create: {
+  //       userId,
+  //       plan,
+  //       endDate,
+  //       status: SubscriptionStatus.ACTIVE,
+  //     },
+  //     update: {
+  //       plan,
+  //       startTime: new Date(),
+  //       endDate,
+  //       status: SubscriptionStatus.ACTIVE,
+  //     },
+  //   }),
+  // ]);
+
+
+  await prisma.purchase.update({
+  where: { id: purchaseId },
+  data: {
+    status: PaymentStatus.SUCCESS,
+    transactionId,
+    expiresAt: endDate,
+    ...(stripeCustomerId && { stripeCustomerId }),
+  },
+});
+
+await prisma.subscription.upsert({
+  where: { userId },
+  create: {
+    userId,
+    plan,
+    endDate,
+    status: SubscriptionStatus.ACTIVE,
+  },
+  update: {
+    plan,
+    startTime: new Date(),
+    endDate,
+    status: SubscriptionStatus.ACTIVE,
+  },
+});
 };
 
 const _completePurchase = async (

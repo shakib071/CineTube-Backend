@@ -24,6 +24,21 @@ const createPurchase = async (
   mediaId: string,
   payload: ICreatePurchasePayload
 ) => {
+
+  const subscription = await prisma.subscription.findUnique({
+    where: { userId: user.userId },
+  });
+
+  if (
+    subscription &&
+    subscription.status === "ACTIVE" &&
+    subscription.endDate > new Date()
+  ) {
+    throw new AppError(
+      status.CONFLICT,
+      "You already have an active subscription. No need to buy or rent."
+    );
+  }
   const media = await prisma.media.findUnique({ where: { id: mediaId } });
   if (!media) throw new AppError(status.NOT_FOUND, "Media not found");
 
@@ -58,8 +73,12 @@ const createPurchase = async (
   }
 
   // Amounts: store in USD for Stripe, BDT for SSLCommerz
-  const amountUsd = media.price;          // e.g. 4.99
-  const amountBdt = media.price * 120;    // rough BDT equivalent
+  // const amountUsd = media.price;          // e.g. 4.99
+  // const amountBdt = media.price * 120;    // rough BDT equivalent
+  
+  // Determine price based on type
+    const amountUsd = payload.type === "RENT" ? media.price * 0.4 : media.price;
+    const amountBdt = payload.type === "RENT" ? media.price * 0.4 * 120 : media.price * 120;
 
   if (payload.paymentGateway === "STRIPE") {
     return _createStripePurchaseSession(user, media, mediaId, payload.type as PurchaseType, amountUsd);
@@ -223,8 +242,21 @@ const getPurchaseHistory = async (user: IRequestUser) => {
 
 // ── Helper: check if a user has active access to a media ─────────────────────
 const hasActiveAccess = async (userId: string, mediaId: string): Promise<boolean> => {
-  // Check active subscription (gives access to all PREMIUM content)
+
+
+
+  
   const sub = await prisma.subscription.findUnique({ where: { userId } });
+      // Auto mark expired
+  if (sub && sub.status === "ACTIVE" && sub.endDate < new Date()) {
+    await prisma.subscription.update({
+      where: { userId },
+      data: { status: "EXPIRED" }
+    });
+  }
+
+  // Check active subscription (gives access to all PREMIUM content)
+
   if (sub && sub.status === "ACTIVE" && sub.endDate > new Date()) return true;
 
   // Check individual purchase
@@ -239,6 +271,8 @@ const hasActiveAccess = async (userId: string, mediaId: string): Promise<boolean
       ],
     },
   });
+
+
   return !!purchase;
 };
 

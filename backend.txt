@@ -6,7 +6,7 @@ Phase 5 — Payment & Subscription
 
 8. Subscription routes
    □ POST /subscription/stripe    → create Stripe session
-   □ POST /subscription/ssl       → SSLCommerz payment
+
    □ POST /subscription/webhook   → Stripe webhook
 
 9. Purchase routes (buy/rent individual movie)
