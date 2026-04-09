@@ -17,6 +17,18 @@ const getUserStats = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+
+const getStats = catchAsync(async (_req: Request, res: Response) => {
+  const result = await statsService.getStats();
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Stats fetched successfully",
+    data: result,
+  });
+});
+
 export const statsController = {
     getUserStats,
+    getStats
 };

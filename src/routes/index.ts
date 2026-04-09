@@ -9,6 +9,7 @@ import { watchlistRoutes } from "../modules/watchlist/watchlist.route";
 import { subscriptionRoutes } from "../modules/subscription/subscription.route";
 import { purchaseRoutes } from "../modules/purchase/purchase.route";
 import { statsRoutes } from "../modules/stats/stats.route";
+import { newsletterRoutes } from "../modules/newsletter/newsletter.route";
 
 
 const router = Router();
@@ -23,6 +24,7 @@ router.use("/watchlist", watchlistRoutes);
 router.use("/subscription", subscriptionRoutes);
 router.use("/purchase",     purchaseRoutes);
 router.use("/stats", statsRoutes);
+router.use("/newsletter",   newsletterRoutes);
 
 
 export const indexRoutes = router;

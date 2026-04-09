@@ -2,15 +2,4 @@ Media CRUD  →  User Management  →  Reviews  →  Watchlist  →  Payment
 
 
 
-Phase 6 — Newsletter & Stats
-
-10. Newsletter
-    □ POST /newsletter             → subscribe email
-
-
-11. Admin stats
-    □ GET /admin/stats             → total users, media, revenue
-    
-
-
 
