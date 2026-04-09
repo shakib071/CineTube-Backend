@@ -223,7 +223,7 @@ const _createSSLPurchaseSession = async (
 // ── GET /purchase ─────────────────────────────────────────────────────────────
 const getPurchaseHistory = async (user: IRequestUser) => {
   const purchases = await prisma.purchase.findMany({
-    where: { userId: user.userId },
+    where: { userId: user.userId , status: { not: PaymentStatus.PENDING } },
     orderBy: { createdAt: "desc" },
     include: {
       media: {

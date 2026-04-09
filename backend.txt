@@ -2,27 +2,15 @@ Media CRUD  →  User Management  →  Reviews  →  Watchlist  →  Payment
 
 
 
-Phase 5 — Payment & Subscription
-
-8. Subscription routes
-   □ POST /subscription/stripe    → create Stripe session
-
-   □ POST /subscription/webhook   → Stripe webhook
-
-9. Purchase routes (buy/rent individual movie)
-   □ POST /purchase/:mediaId      → buy or rent
-   □ GET  /purchase               → purchase history
-
-
-
-
 Phase 6 — Newsletter & Stats
 
 10. Newsletter
     □ POST /newsletter             → subscribe email
 
+
 11. Admin stats
     □ GET /admin/stats             → total users, media, revenue
+    
 
 
 

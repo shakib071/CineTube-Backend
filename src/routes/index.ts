@@ -8,6 +8,7 @@ import { commentRoutes } from "../modules/comments/comments.route";
 import { watchlistRoutes } from "../modules/watchlist/watchlist.route";
 import { subscriptionRoutes } from "../modules/subscription/subscription.route";
 import { purchaseRoutes } from "../modules/purchase/purchase.route";
+import { statsRoutes } from "../modules/stats/stats.route";
 
 
 const router = Router();
@@ -21,6 +22,7 @@ router.use("/comments", commentRoutes);
 router.use("/watchlist", watchlistRoutes);
 router.use("/subscription", subscriptionRoutes);
 router.use("/purchase",     purchaseRoutes);
+router.use("/stats", statsRoutes);
 
 
 export const indexRoutes = router;
