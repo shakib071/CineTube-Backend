@@ -19,7 +19,7 @@ export const auth = betterAuth({
 
     emailAndPassword: {
         enabled: true,
-        requireEmailVerification: false, // Disabled for development
+        requireEmailVerification: true, // block login until email verified
 
     },
 
@@ -41,11 +41,11 @@ export const auth = betterAuth({
         }
     },
 
-    // emailVerification: {
-    //     sendOnSignIn:true,
-    //     sendOnSignUp:true,
-    //     autoSignInAfterVerification:true,
-    // },
+    emailVerification: {
+        sendOnSignIn:true,
+        sendOnSignUp:true,
+        autoSignInAfterVerification:true,
+    },
 
 
     user: {
@@ -76,60 +76,68 @@ export const auth = betterAuth({
 
     plugins: [
         bearer(),
-        // emailOTP({
-        //     overrideDefaultEmailVerification: true,
-        //     async sendVerificationOTP({email, otp, type}) {
-        //         if(type === "email-verification"){
-        //           const user = await prisma.user.findUnique({
-        //             where : {
-        //                 email,
-        //             }
-        //           })
+        emailOTP({
+            overrideDefaultEmailVerification: true,
+            async sendVerificationOTP({email, otp, type}) {
+                if(type === "email-verification"){
+                  const user = await prisma.user.findUnique({
+                    where : {
+                        email,
+                    }
+                  })
 
-        //            if(!user){
-        //             console.error(`User with email ${email} not found. Cannot send verification OTP.`);
-        //             return;
-        //            }
+                   if(!user){
+                    console.error(`User with email ${email} not found. Cannot send verification OTP.`);
+                    return;
+                   }
 
-        //            if(user && user.role === Role.ADMIN){
-        //             console.log(`User with email ${email} is a admin. Skipping sending verification OTP.`);
-        //             return;
-        //            }
+                   if(user && user.role === Role.ADMIN){
+                    console.log(`User with email ${email} is a admin. Skipping sending verification OTP.`);
+                    return;
+                   }
                   
-        //             if (user && !user.emailVerified){
-        //             sendEmail({
-        //                 to : email,
-        //                 subject : "Verify your email",
-        //                 templateName : "otp",
-        //                 templateData :{
-        //                     name : user.name,
-        //                     otp,
-        //                 }
-        //             })
-        //           }
-        //         }else if(type === "forget-password"){
-        //             const user = await prisma.user.findUnique({
-        //                 where : {
-        //                     email,
-        //                 }
-        //             })
+                    if (user && !user.emailVerified){
+                    sendEmail({
+                        to : email,
+                        subject : " Email Verification OTP - CineTube",
+                        html: `
+                            <h2>Email Verification</h2>
+                            <p>Hello ${user.name},</p>
+                            <p>Your verification OTP is:</p>
+                            <h1 style="letter-spacing:3px;">${otp}</h1>
+                            <p>This OTP expires in 5 minutes.</p>
+                            <br/>
+                            <p>— CineTube Team</p>
+                        `
+                    });
+                  }
+                }else if(type === "forget-password"){
+                    const user = await prisma.user.findUnique({
+                        where : {
+                            email,
+                        }
+                    })
 
-        //             if(user){
-        //                 sendEmail({
-        //                     to : email,
-        //                     subject : "Password Reset OTP",
-        //                     templateName : "otp",
-        //                     templateData :{
-        //                         name : user.name,
-        //                         otp,
-        //                     }
-        //                 })
-        //             }
-        //         }
-        //     },
-        //     expiresIn : 5 * 60, // 5 minutes in seconds
-        //     otpLength : 6,
-        // })
+                    if(user){
+                        sendEmail({
+                            to : email,
+                            subject : "Password Reset OTP",
+                            html: `
+                                <h2>Password Reset</h2>
+                                <p>Hello ${user.name},</p>
+                                <p>Your password reset OTP is:</p>
+                                <h1 style="letter-spacing:3px;">${otp}</h1>
+                                <p>This OTP expires in 5 minutes.</p>
+                                <br/>
+                                <p>— CineTube Team</p>
+                            `
+                        });
+                    }
+                }
+            },
+            expiresIn : 5 * 60, // 5 minutes in seconds
+            otpLength : 6,
+        })
     ],
 
 

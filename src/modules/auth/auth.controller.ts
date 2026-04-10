@@ -47,7 +47,10 @@ const login = catchAsync(
 
         tokenUtils.setAccessTokenCookie(res,accessToken);
         tokenUtils.setRefreshTokenCookie(res,refreshToken);
-        tokenUtils.setBetterAuthSessionCookie(res,token as string);
+        if(token){
+            tokenUtils.setBetterAuthSessionCookie(res,token as string);
+        }
+        
         
         sendResponse(res, {
             httpStatusCode: status.OK,
@@ -264,6 +267,75 @@ const handleOAuthError = catchAsync((req: Request, res: Response) => {
 })
 
 
+const verifyEmail = catchAsync(
+    async (req: Request, res: Response) => {
+        const { email, otp } = req.body;
+        await authService.verifyEmail(email, otp);
+
+        sendResponse(res, {
+            httpStatusCode: status.OK,
+            success: true,
+            message: "Email verified successfully",
+        });
+    }
+)
+
+const forgetPassword = catchAsync(
+    async (req: Request, res: Response) => {
+        const { email } = req.body;
+        await authService.forgetPassword(email);
+
+        sendResponse(res, {
+            httpStatusCode: status.OK,
+            success: true,
+            message: "Password reset OTP sent to email successfully",
+        });
+    }
+)
+
+const resetPassword = catchAsync(
+    async (req: Request, res: Response) => {
+        const { email, otp, newPassword } = req.body;
+        await authService.resetPassword(email, otp, newPassword);
+
+        sendResponse(res, {
+            httpStatusCode: status.OK,
+            success: true,
+            message: "Password reset successfully",
+        });
+    }
+)
+
+
+const resendVerifyEmail = catchAsync(
+  async (req: Request, res: Response) => {
+    const { email } = req.body;
+
+    await authService.resendVerifyEmail(email);
+
+    sendResponse(res, {
+      httpStatusCode: status.OK,
+      success: true,
+      message: "Verification OTP resent successfully",
+    });
+  }
+);
+
+const resendForgetPassword = catchAsync(
+  async (req: Request, res: Response) => {
+    const { email } = req.body;
+
+    await authService.resendForgetPassword(email);
+
+    sendResponse(res, {
+      httpStatusCode: status.OK,
+      success: true,
+      message: "Password reset OTP resent successfully",
+    });
+  }
+);
+
+
 export const authController = {
     register,
     login,
@@ -274,4 +346,9 @@ export const authController = {
     googleLogin,
     googleLoginSuccess,
     handleOAuthError,
+    verifyEmail,
+    forgetPassword,
+    resetPassword,
+    resendVerifyEmail,
+    resendForgetPassword
 }

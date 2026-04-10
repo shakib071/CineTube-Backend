@@ -10,8 +10,18 @@ router.post('/register',authController.register);
 router.post('/login',authController.login);
 router.get('/me',checkAuth(Role.USER,Role.ADMIN),authController.getMe);
 router.post('/logout',checkAuth(Role.USER,Role.ADMIN),authController.logout);
+
 router.post('/change-password',checkAuth(Role.USER,Role.ADMIN),authController.changePassword);
-router.post("/refresh-token", authController.getNewToken)
+router.post("/refresh-token", authController.getNewToken);
+
+router.post('/verify-email', authController.verifyEmail);
+router.post("/forget-password", authController.forgetPassword);
+router.post("/reset-password", authController.resetPassword);
+
+router.post("/resend-verify-email", authController.resendVerifyEmail);
+router.post("/resend-forget-password", authController.resendForgetPassword);
+
+
 router.get("/login/google", authController.googleLogin);
 router.get("/google/success", authController.googleLoginSuccess);
 router.get("/oauth/error", authController.handleOAuthError);
