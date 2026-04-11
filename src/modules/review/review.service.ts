@@ -135,6 +135,13 @@ const deleteReview = async (id: string) => {
   const review = await prisma.review.findUnique({ where: { id } });
   if (!review) throw new AppError(status.NOT_FOUND, "Review not found");
 
+  // delete comments first (replies cascade via Comment_parentId_fkey)
+  await prisma.comment.deleteMany({ where: { reviewId: id } });
+  
+  // delete likes first (replies cascade via Like_reviewId_fkey)
+  await prisma.like.deleteMany({ where: { reviewId: id } });
+
+  
   await prisma.review.delete({ where: { id } });
 
   // recompute after delete
