@@ -11,3 +11,6 @@ api
 /src/generated/prisma
 
 /src/generated/prisma
+
+.vercel
+.env*.local

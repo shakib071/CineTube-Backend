@@ -12,14 +12,14 @@ import { auth } from "./lib/auth";
 import { globalErrorHandler } from "./middleware/globalErrorHandler";
 import { notFound } from "./middleware/notFound";
 import { indexRoutes } from "./routes";
-import path from "path";
+// import path from "path";
 import { subscriptionController } from "./modules/subscription/subscription.controller";
 
 const app: Application = express();
 app.set("query parser", (str : string) => qs.parse(str));
 
-app.set("view engine", "ejs");
-app.set("views",path.resolve(process.cwd(), `src/templates`) )
+// app.set("view engine", "ejs");
+// app.set("views",path.resolve(process.cwd(), `src/templates`) )
 
 // app.post("/webhook", express.raw({ type: "application/json" }), PaymentController.handleStripeWebhookEvent)
 app.post(
@@ -27,11 +27,12 @@ app.post(
   express.raw({ type: "application/json" }),
   subscriptionController.stripeWebhook
 );
+
 app.use(cors({
     origin : [envVars.FRONTEND_URL, envVars.BETTER_AUTH_URL, "http://localhost:3000", "http://localhost:5000"],
     credentials : true,
-    methods : ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders : ["Content-Type", "Authorization"]
+    methods : ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders : ["Content-Type", "Authorization", "Cookie"],
 }))
 
 

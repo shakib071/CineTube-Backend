@@ -3,7 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import { envVars } from "../config/env";
 import { Role, UserStatus } from "../../generated/prisma/enums";
-import { bearer, emailOTP } from "better-auth/plugins";
+import { bearer, emailOTP, oAuthProxy } from "better-auth/plugins";
 import { sendEmail } from "../utils/email";
 
 
@@ -75,6 +75,7 @@ export const auth = betterAuth({
     },
 
     plugins: [
+        oAuthProxy(),
         bearer(),
         emailOTP({
             overrideDefaultEmailVerification: true,
@@ -167,7 +168,7 @@ export const auth = betterAuth({
                     sameSite: "none",
                     secure: true,
                     httpOnly: true,
-                    path: "/",
+                    partitioned: true,
                 }
             },
             sessionToken:{
@@ -175,7 +176,7 @@ export const auth = betterAuth({
                     sameSite: "none",
                     secure: true,
                     httpOnly: true,
-                    path: "/",
+                    partitioned: true,
                 }
             }
         }

@@ -27,7 +27,6 @@ A full-featured RESTful API backend for **CineTube**, a streaming platform that 
 | File Storage | Cloudinary (via Multer) |
 | Payments | Stripe + SSLCommerz |
 | Email | Nodemailer (SMTP) |
-| Templating | EJS |
 | Validation | Zod |
 | Build Tool | tsup |
 
@@ -91,9 +90,6 @@ src/
 │   ├── cookie.ts            # Cookie helpers
 │   ├── token.ts             # Token generation utilities
 │   └── seed.ts              # Admin seeder script
-├── templates/
-│   ├── otp.ejs              # OTP email template
-│   └── googleRedirect.ejs   # Google OAuth redirect template
 ├── interfaces/              # TypeScript interfaces
 ├── enum/                    # Shared enums
 ├── errorHelpers/            # AppError class, Zod error handler

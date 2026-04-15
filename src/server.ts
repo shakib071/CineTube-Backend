@@ -1,18 +1,21 @@
-import { env } from "node:process";
+
 import app from "./app";
 import { prisma } from "./lib/prisma";
-import { envVars } from "./config/env";
 
-const PORT = envVars.PORT || 5000;
+
+
+const PORT = process.env.PORT || 5000;
 
 async function main() {
     try {
         await prisma.$connect();
         // console.log("Connected to the database successfully.");
       
+        if(process.env.NODE_ENV !== "production"){
             app.listen(PORT, () => {
                 console.log(`Server is running on ${PORT}`);
             });
+        }
         
     } 
     catch (error) {
@@ -22,4 +25,5 @@ async function main() {
 }
 
 main();
+export default app;
 
