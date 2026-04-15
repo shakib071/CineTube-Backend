@@ -219,41 +219,80 @@ const googleLogin = catchAsync((req: Request, res: Response) => {
         </html>
     `;
 
-    const html2 = 
+    // const html2 = 
     res.send(html);
 });
+
+
+// const googleLoginSuccess = catchAsync(async (req: Request, res: Response) => {
+//     const redirectPath = req.query.redirect as string || "/dashboard";
+
+//     const sessionToken = req.cookies["better-auth.session_token"];
+
+//     if(!sessionToken){
+//         return res.redirect(`${envVars.FRONTEND_URL}/login?error=oauth_failed`);
+//     }
+
+//     const session = await auth.api.getSession({
+//         headers:{
+//             "Cookie" : `better-auth.session_token=${sessionToken}`
+//         }
+//     })
+
+//     if (!session) {
+//         return res.redirect(`${envVars.FRONTEND_URL}/login?error=no_session_found`);
+//     }
+
+
+//     if(session && !session.user){
+//         return res.redirect(`${envVars.FRONTEND_URL}/login?error=no_user_found`);
+//     }
+
+//     const result = await authService.googleLoginSuccess(session);
+
+//     const {accessToken, refreshToken} = result;
+
+//     tokenUtils.setAccessTokenCookie(res, accessToken);
+//     tokenUtils.setRefreshTokenCookie(res, refreshToken);
+//     const isValidRedirectPath = redirectPath.startsWith("/") && !redirectPath.startsWith("//");
+//     const finalRedirectPath = isValidRedirectPath ? redirectPath : "/dashboard";
+
+//     res.redirect(`${envVars.FRONTEND_URL}${finalRedirectPath}`);
+// })
 
 
 const googleLoginSuccess = catchAsync(async (req: Request, res: Response) => {
     const redirectPath = req.query.redirect as string || "/dashboard";
 
-    const sessionToken = req.cookies["better-auth.session_token"];
+    // In production OAuth redirects, cookieParser may not have the cookie yet
+    // Read directly from the raw Cookie header as fallback
+    const cookieHeader = req.headers.cookie || "";
+    const sessionTokenMatch = cookieHeader.match(/better-auth\.session_token=([^;]+)/);
+    const sessionToken = sessionTokenMatch?.[1] || req.cookies["better-auth.session_token"];
 
-    if(!sessionToken){
-        return res.redirect(`${envVars.FRONTEND_URL}/login?error=oauth_failed`);
-    }
-
-    const session = await auth.api.getSession({
-        headers:{
-            "Cookie" : `better-auth.session_token=${sessionToken}`
-        }
-    })
-
-    if (!session) {
+    if (!sessionToken) {
+        console.error("[googleLoginSuccess] No session token. Cookies:", req.headers.cookie);
         return res.redirect(`${envVars.FRONTEND_URL}/login?error=no_session_found`);
     }
 
+    const session = await auth.api.getSession({
+        headers: new Headers({
+            "Cookie": `better-auth.session_token=${sessionToken}`
+        })
+    });
 
-    if(session && !session.user){
-        return res.redirect(`${envVars.FRONTEND_URL}/login?error=no_user_found`);
+    if (!session || !session.user) {
+        console.error("[googleLoginSuccess] Session invalid for token:", sessionToken);
+        return res.redirect(`${envVars.FRONTEND_URL}/login?error=no_session_found`);
     }
 
     const result = await authService.googleLoginSuccess(session);
-
-    const {accessToken, refreshToken} = result;
+    const { accessToken, refreshToken } = result;
 
     tokenUtils.setAccessTokenCookie(res, accessToken);
     tokenUtils.setRefreshTokenCookie(res, refreshToken);
+    tokenUtils.setBetterAuthSessionCookie(res, sessionToken);
+
     const isValidRedirectPath = redirectPath.startsWith("/") && !redirectPath.startsWith("//");
     const finalRedirectPath = isValidRedirectPath ? redirectPath : "/dashboard";
 
