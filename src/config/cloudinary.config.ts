@@ -74,11 +74,11 @@ export const deleteFileFromCloudinary = async (url : string) => {
             }
             )
 
-            console.log(`File ${publicId} deleted from cloudinary`);
+            // console.log(`File ${publicId} deleted from cloudinary`);
         }
 
     } catch (error) {
-        console.error("Error deleting file from Cloudinary:", error);
+        // console.error("Error deleting file from Cloudinary:", error);
         throw new AppError(status.INTERNAL_SERVER_ERROR, "Failed to delete file from Cloudinary");
     }
 }

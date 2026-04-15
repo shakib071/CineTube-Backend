@@ -123,7 +123,7 @@ const handleStripeWebhook = async (rawBody: Buffer, sig: string) => {
       sig,
       envVars.STRIPE.STRIPE_WEBHOOK_SECRET
     );
-    console.log(`Stripe webhook received: ${event.type}`);
+    // console.log(`Stripe webhook received: ${event.type}`);
   } catch {
     throw new AppError(status.BAD_REQUEST, "Invalid Stripe webhook signature");
   }
@@ -133,8 +133,8 @@ const handleStripeWebhook = async (rawBody: Buffer, sig: string) => {
     const session = event.data.object as Stripe.Checkout.Session;
     const meta    = session.metadata ?? {};
 
-    console.log(`Stripe session completed: ${session.id}`);
-    console.log({meta})
+    // console.log(`Stripe session completed: ${session.id}`);
+    // console.log({meta})
     if (meta.type === "SUBSCRIPTION") {
       await _activateSubscription(
         meta.userId as string,

@@ -13,7 +13,7 @@ export const seedAdmin = async () => {
         })
 
         if(isAdminExist) {
-            console.log("Admin already exists. Skipping seeding admin.");
+            // console.log("Admin already exists. Skipping seeding admin.");
             return;
         }
 
@@ -60,9 +60,9 @@ export const seedAdmin = async () => {
             }
         })
 
-        console.log("admin Created ", admin);
+        // console.log("admin Created ", admin);
     } catch (error) {
-        console.error("Error seedingadmin: ", error);
+        // console.error("Error seedingadmin: ", error);
         await prisma.user.delete({
             where : {
                 email : envVars.ADMIN_EMAIL,

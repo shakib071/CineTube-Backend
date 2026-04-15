@@ -87,12 +87,12 @@ export const auth = betterAuth({
                   })
 
                    if(!user){
-                    console.error(`User with email ${email} not found. Cannot send verification OTP.`);
+                    // console.error(`User with email ${email} not found. Cannot send verification OTP.`);
                     return;
                    }
 
                    if(user && user.role === Role.ADMIN){
-                    console.log(`User with email ${email} is a admin. Skipping sending verification OTP.`);
+                    // console.log(`User with email ${email} is a admin. Skipping sending verification OTP.`);
                     return;
                    }
                   

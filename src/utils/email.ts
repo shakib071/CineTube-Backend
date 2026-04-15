@@ -43,9 +43,9 @@ export const sendEmail = async ({to, subject,html, attachments} : SendEmailOptio
             }))
         })
 
-        console.log(`Email sent to ${to} : ${info.messageId}`);
+        // console.log(`Email sent to ${to} : ${info.messageId}`);
     } catch (error : any) {
-        console.log("Email Sending Error", error.message);
+        // console.log("Email Sending Error", error.message);
         throw new AppError(status.INTERNAL_SERVER_ERROR, "Failed to send email");
     }
 }
