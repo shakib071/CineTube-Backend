@@ -164,7 +164,7 @@ const getNewToken = catchAsync(
 const googleLogin = catchAsync((req: Request, res: Response) => {
     const redirectPath = (req.query.redirect as string) || "/dashboard";
     const encodedRedirectPath = encodeURIComponent(redirectPath);
-    const callbackURL = `${envVars.BETTER_AUTH_URL}/api/v1/auth/google/success?redirect=${encodedRedirectPath}`;
+    const callbackURL = `${envVars.FRONTEND_URL}/auth/callback?redirect=${encodedRedirectPath}`;
 
     const html = `
         <!DOCTYPE html>
@@ -261,43 +261,82 @@ const googleLogin = catchAsync((req: Request, res: Response) => {
 // })
 
 
+// const googleLoginSuccess = catchAsync(async (req: Request, res: Response) => {
+//     const redirectPath = req.query.redirect as string || "/dashboard";
+
+//     // In production OAuth redirects, cookieParser may not have the cookie yet
+//     // Read directly from the raw Cookie header as fallback
+//     const cookieHeader = req.headers.cookie || "";
+//     const sessionTokenMatch = cookieHeader.match(/better-auth\.session_token=([^;]+)/);
+//     const sessionToken = sessionTokenMatch?.[1] || req.cookies["better-auth.session_token"];
+
+//     if (!sessionToken) {
+//         console.error("[googleLoginSuccess] No session token. Cookies:", req.headers.cookie);
+//         return res.redirect(`${envVars.FRONTEND_URL}/login?error=no_session_found`);
+//     }
+
+//     const session = await auth.api.getSession({
+//         headers: new Headers({
+//             "Cookie": `better-auth.session_token=${sessionToken}`
+//         })
+//     });
+
+//     if (!session || !session.user) {
+//         console.error("[googleLoginSuccess] Session invalid for token:", sessionToken);
+//         return res.redirect(`${envVars.FRONTEND_URL}/login?error=no_session_found`);
+//     }
+
+//     const result = await authService.googleLoginSuccess(session);
+//     const { accessToken, refreshToken } = result;
+
+//     tokenUtils.setAccessTokenCookie(res, accessToken);
+//     tokenUtils.setRefreshTokenCookie(res, refreshToken);
+//     tokenUtils.setBetterAuthSessionCookie(res, sessionToken);
+
+//     const isValidRedirectPath = redirectPath.startsWith("/") && !redirectPath.startsWith("//");
+//     const finalRedirectPath = isValidRedirectPath ? redirectPath : "/dashboard";
+
+//     res.redirect(`${envVars.FRONTEND_URL}${finalRedirectPath}`);
+// })
+
 const googleLoginSuccess = catchAsync(async (req: Request, res: Response) => {
     const redirectPath = req.query.redirect as string || "/dashboard";
 
-    // In production OAuth redirects, cookieParser may not have the cookie yet
-    // Read directly from the raw Cookie header as fallback
+    // Better-auth's oAuthProxy plugin may pass the session token as a query param
+    const tokenFromQuery = req.query.token as string;
+    
     const cookieHeader = req.headers.cookie || "";
     const sessionTokenMatch = cookieHeader.match(/better-auth\.session_token=([^;]+)/);
-    const sessionToken = sessionTokenMatch?.[1] || req.cookies["better-auth.session_token"];
+    const sessionToken = tokenFromQuery || sessionTokenMatch?.[1] || req.cookies["better-auth.session_token"];
 
     if (!sessionToken) {
-        console.error("[googleLoginSuccess] No session token. Cookies:", req.headers.cookie);
         return res.redirect(`${envVars.FRONTEND_URL}/login?error=no_session_found`);
     }
 
     const session = await auth.api.getSession({
-        headers: new Headers({
-            "Cookie": `better-auth.session_token=${sessionToken}`
-        })
+        headers: new Headers({ "Cookie": `better-auth.session_token=${sessionToken}` })
     });
 
-    if (!session || !session.user) {
-        console.error("[googleLoginSuccess] Session invalid for token:", sessionToken);
+    if (!session?.user) {
         return res.redirect(`${envVars.FRONTEND_URL}/login?error=no_session_found`);
     }
 
     const result = await authService.googleLoginSuccess(session);
     const { accessToken, refreshToken } = result;
 
-    tokenUtils.setAccessTokenCookie(res, accessToken);
-    tokenUtils.setRefreshTokenCookie(res, refreshToken);
-    tokenUtils.setBetterAuthSessionCookie(res, sessionToken);
-
+    // ✅ Don't rely on cookies crossing the redirect — send tokens to frontend via URL
+    // The frontend /auth/callback page will read them and store in httpOnly cookies via server action
     const isValidRedirectPath = redirectPath.startsWith("/") && !redirectPath.startsWith("//");
     const finalRedirectPath = isValidRedirectPath ? redirectPath : "/dashboard";
 
-    res.redirect(`${envVars.FRONTEND_URL}${finalRedirectPath}`);
-})
+    res.redirect(
+        `${envVars.FRONTEND_URL}/auth/callback?` +
+        `accessToken=${encodeURIComponent(accessToken)}` +
+        `&refreshToken=${encodeURIComponent(refreshToken)}` +
+        `&sessionToken=${encodeURIComponent(sessionToken)}` +
+        `&redirect=${encodeURIComponent(finalRedirectPath)}`
+    );
+});
 
 
 const handleOAuthError = catchAsync((req: Request, res: Response) => {

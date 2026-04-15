@@ -75,7 +75,10 @@ export const auth = betterAuth({
     },
 
     plugins: [
-        oAuthProxy(),
+        oAuthProxy({
+            productionURL: envVars.BETTER_AUTH_URL, // your backend URL
+            developmentURL: envVars.FRONTEND_URL,
+        }),
         bearer(),
         emailOTP({
             overrideDefaultEmailVerification: true,
@@ -151,10 +154,6 @@ export const auth = betterAuth({
         }
     },
 
-    redirectURLs:{
-        signIn: `${envVars.BETTER_AUTH_URL}/api/v1/auth/google/success`,
-
-    },
 
     trustedOrigins: [
         envVars.BETTER_AUTH_URL || "http://localhost:5000",envVars.FRONTEND_URL,
@@ -163,7 +162,7 @@ export const auth = betterAuth({
     ],
     advanced: {
         // disableCSRFCheck: true,
-        useSecureCookies : false,
+        useSecureCookies : true,
         cookies:{
             state:{
                 attributes:{
