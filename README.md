@@ -6,10 +6,14 @@ A full-featured RESTful API backend for **CineTube**, a streaming platform that 
 
 ## 🌐 Live URLs
 
+## 🌐 Live URLs
+---
+
 | Service | URL |
 |---|---|
-| 🖥️ Frontend | `<!-- ADD FRONTEND LIVE URL HERE -->` |
-| ⚙️ Backend API | `<!-- ADD BACKEND LIVE URL HERE -->` |
+| 🖥️ Frontend | [https://cinetube-jet.vercel.app](https://cinetube-jet.vercel.app) |
+| ⚙️ Backend API | [https://cinetube-server-psi.vercel.app](https://cinetube-server-psi.vercel.app) |
+| 🖥️ ER Diagram | [https://drawsql.app/teams/shakib-hasan/diagrams/cinetube](https://drawsql.app/teams/shakib-hasan/diagrams/cinetube) |
 
 ---
 
