@@ -77,7 +77,7 @@ export const auth = betterAuth({
     plugins: [
         oAuthProxy({
             productionURL: envVars.BETTER_AUTH_URL, // your backend URL
-            developmentURL: envVars.FRONTEND_URL,
+            currentURL: envVars.FRONTEND_URL,
         }),
         bearer(),
         emailOTP({

@@ -161,65 +161,90 @@ const getNewToken = catchAsync(
 )
 
 
+// const googleLogin = catchAsync((req: Request, res: Response) => {
+//     const redirectPath = (req.query.redirect as string) || "/dashboard";
+//     const encodedRedirectPath = encodeURIComponent(redirectPath);
+//     const callbackURL = `${envVars.FRONTEND_URL}/auth/callback?redirect=${encodedRedirectPath}`;
+
+//     const html = `
+//         <!DOCTYPE html>
+//         <html lang="en">
+//         <head>
+//             <meta charset="UTF-8">
+//             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//             <title>Google Login</title>
+//         </head>
+//         <body>
+//             <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+//                 <div style="text-align: center;">
+//                     <p>Redirecting To Google...</p>
+                    
+//                 </div>
+//             </div>
+
+//             <script>
+//                 const callbackURL = "${callbackURL}";
+//                 const betterAuthUrl = "${envVars.BETTER_AUTH_URL}";
+
+//                 async function signInWithGoogle() {
+//                     try {
+//                         const response = await fetch(betterAuthUrl + "/api/auth/sign-in/social", {
+//                             method: "POST",
+//                             headers: {
+//                                 "Content-Type": "application/json"
+//                             },
+//                             credentials: "include",
+//                             body: JSON.stringify({
+//                                 provider: "google",
+//                                 callbackURL: callbackURL
+//                             })
+//                         });
+
+//                         const data = await response.json();
+
+//                         if(data.url){
+//                             window.location.href = data.url;
+//                         } else {
+//                             document.body.innerHTML = '<div style="text-align: center; padding: 50px;"><p>Error: Could not get Google OAuth URL</p></div>';
+//                         }
+//                     } catch (error) {
+//                         document.body.innerHTML = '<div style="text-align: center; padding: 50px;"><p>Error: ' + error.message + '</p></div>';
+//                     }
+//                 }
+
+//                 // Auto-trigger on page load
+//                 window.onload = signInWithGoogle;
+//             </script>
+//         </body>
+//         </html>
+//     `;
+
+//     // const html2 = 
+//     res.send(html);
+// });
+
+
+
 const googleLogin = catchAsync((req: Request, res: Response) => {
-    const redirectPath = (req.query.redirect as string) || "/dashboard";
+    const redirectPath = (req.query.redirect as string) || "/user/dashboard";
     const encodedRedirectPath = encodeURIComponent(redirectPath);
     const callbackURL = `${envVars.FRONTEND_URL}/auth/callback?redirect=${encodedRedirectPath}`;
 
-    const html = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Google Login</title>
-        </head>
-        <body>
-            <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-                <div style="text-align: center;">
-                    <p>Redirecting To Google...</p>
-                    
-                </div>
-            </div>
+    const html = `<!DOCTYPE html><html><head><title>Redirecting...</title></head><body>
+        <p style="text-align:center;margin-top:40vh;font-family:sans-serif">Redirecting to Google...</p>
+        <script>
+            fetch("${envVars.BETTER_AUTH_URL}/api/auth/sign-in/social", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ provider: "google", callbackURL: "${callbackURL}" })
+            })
+            .then(r => r.json())
+            .then(data => { if (data.url) window.location.href = data.url; })
+            .catch(e => { document.body.innerHTML = "Error: " + e.message; });
+        </script>
+    </body></html>`;
 
-            <script>
-                const callbackURL = "${callbackURL}";
-                const betterAuthUrl = "${envVars.BETTER_AUTH_URL}";
-
-                async function signInWithGoogle() {
-                    try {
-                        const response = await fetch(betterAuthUrl + "/api/auth/sign-in/social", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            credentials: "include",
-                            body: JSON.stringify({
-                                provider: "google",
-                                callbackURL: callbackURL
-                            })
-                        });
-
-                        const data = await response.json();
-
-                        if(data.url){
-                            window.location.href = data.url;
-                        } else {
-                            document.body.innerHTML = '<div style="text-align: center; padding: 50px;"><p>Error: Could not get Google OAuth URL</p></div>';
-                        }
-                    } catch (error) {
-                        document.body.innerHTML = '<div style="text-align: center; padding: 50px;"><p>Error: ' + error.message + '</p></div>';
-                    }
-                }
-
-                // Auto-trigger on page load
-                window.onload = signInWithGoogle;
-            </script>
-        </body>
-        </html>
-    `;
-
-    // const html2 = 
     res.send(html);
 });
 
@@ -261,81 +286,46 @@ const googleLogin = catchAsync((req: Request, res: Response) => {
 // })
 
 
-// const googleLoginSuccess = catchAsync(async (req: Request, res: Response) => {
-//     const redirectPath = req.query.redirect as string || "/dashboard";
 
-//     // In production OAuth redirects, cookieParser may not have the cookie yet
-//     // Read directly from the raw Cookie header as fallback
-//     const cookieHeader = req.headers.cookie || "";
-//     const sessionTokenMatch = cookieHeader.match(/better-auth\.session_token=([^;]+)/);
-//     const sessionToken = sessionTokenMatch?.[1] || req.cookies["better-auth.session_token"];
 
-//     if (!sessionToken) {
-//         console.error("[googleLoginSuccess] No session token. Cookies:", req.headers.cookie);
-//         return res.redirect(`${envVars.FRONTEND_URL}/login?error=no_session_found`);
-//     }
-
-//     const session = await auth.api.getSession({
-//         headers: new Headers({
-//             "Cookie": `better-auth.session_token=${sessionToken}`
-//         })
-//     });
-
-//     if (!session || !session.user) {
-//         console.error("[googleLoginSuccess] Session invalid for token:", sessionToken);
-//         return res.redirect(`${envVars.FRONTEND_URL}/login?error=no_session_found`);
-//     }
-
-//     const result = await authService.googleLoginSuccess(session);
-//     const { accessToken, refreshToken } = result;
-
-//     tokenUtils.setAccessTokenCookie(res, accessToken);
-//     tokenUtils.setRefreshTokenCookie(res, refreshToken);
-//     tokenUtils.setBetterAuthSessionCookie(res, sessionToken);
-
-//     const isValidRedirectPath = redirectPath.startsWith("/") && !redirectPath.startsWith("//");
-//     const finalRedirectPath = isValidRedirectPath ? redirectPath : "/dashboard";
-
-//     res.redirect(`${envVars.FRONTEND_URL}${finalRedirectPath}`);
-// })
 
 const googleLoginSuccess = catchAsync(async (req: Request, res: Response) => {
-    const redirectPath = req.query.redirect as string || "/dashboard";
+  const cookieHeader = req.headers.cookie || "";
 
-    // Better-auth's oAuthProxy plugin may pass the session token as a query param
-    const tokenFromQuery = req.query.token as string;
-    
-    const cookieHeader = req.headers.cookie || "";
-    const sessionTokenMatch = cookieHeader.match(/better-auth\.session_token=([^;]+)/);
-    const sessionToken = tokenFromQuery || sessionTokenMatch?.[1] || req.cookies["better-auth.session_token"];
+  // better-auth sets __Secure- prefixed cookies in production (HTTPS)
+  const sessionToken =
+    req.cookies["__Secure-better-auth.session_token"] ||
+    req.cookies["better-auth.session_token"] ||
+    cookieHeader.match(/__Secure-better-auth\.session_token=([^;]+)/)?.[1] ||
+    cookieHeader.match(/better-auth\.session_token=([^;]+)/)?.[1];
 
-    if (!sessionToken) {
-        return res.redirect(`${envVars.FRONTEND_URL}/login?error=no_session_found`);
-    }
+  if (!sessionToken) {
+    return res
+      .status(401)
+      .json({ success: false, message: "No session found" });
+  }
 
-    const session = await auth.api.getSession({
-        headers: new Headers({ "Cookie": `better-auth.session_token=${sessionToken}` })
-    });
+  const session = await auth.api.getSession({
+    headers: new Headers({
+      Cookie: `__Secure-better-auth.session_token=${sessionToken}`,
+    }),
+  });
 
-    if (!session?.user) {
-        return res.redirect(`${envVars.FRONTEND_URL}/login?error=no_session_found`);
-    }
+  if (!session?.user) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Invalid session" });
+  }
 
-    const result = await authService.googleLoginSuccess(session);
-    const { accessToken, refreshToken } = result;
+  const result = await authService.googleLoginSuccess(session);
+  const { accessToken, refreshToken } = result;
 
-    // ✅ Don't rely on cookies crossing the redirect — send tokens to frontend via URL
-    // The frontend /auth/callback page will read them and store in httpOnly cookies via server action
-    const isValidRedirectPath = redirectPath.startsWith("/") && !redirectPath.startsWith("//");
-    const finalRedirectPath = isValidRedirectPath ? redirectPath : "/dashboard";
-
-    res.redirect(
-        `${envVars.FRONTEND_URL}/auth/callback?` +
-        `accessToken=${encodeURIComponent(accessToken)}` +
-        `&refreshToken=${encodeURIComponent(refreshToken)}` +
-        `&sessionToken=${encodeURIComponent(sessionToken)}` +
-        `&redirect=${encodeURIComponent(finalRedirectPath)}`
-    );
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Google login successful",
+    data: { accessToken, refreshToken, sessionToken },
+  });
 });
 
 
