@@ -101,7 +101,7 @@ export const auth = betterAuth({
                    }
                   
                     if (user && !user.emailVerified){
-                    sendEmail({
+                    await sendEmail({
                         to : email,
                         subject : " Email Verification OTP - CineTube",
                         html: `
@@ -123,7 +123,7 @@ export const auth = betterAuth({
                     })
 
                     if(user){
-                        sendEmail({
+                        await sendEmail({
                             to : email,
                             subject : "Password Reset OTP",
                             html: `
