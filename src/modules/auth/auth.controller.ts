@@ -338,12 +338,15 @@ const handleOAuthError = catchAsync((req: Request, res: Response) => {
 const verifyEmail = catchAsync(
     async (req: Request, res: Response) => {
         const { email, otp } = req.body;
-        await authService.verifyEmail(email, otp);
+        const result = await authService.verifyEmail(email, otp);
+
+
 
         sendResponse(res, {
             httpStatusCode: status.OK,
             success: true,
             message: "Email verified successfully",
+            data: result,
         });
     }
 )

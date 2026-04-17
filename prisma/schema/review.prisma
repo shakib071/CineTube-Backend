@@ -10,10 +10,10 @@ model Review {
   updatedAt      DateTime     @updatedAt
 
   userId  String
-  user    User   @relation(fields: [userId], references: [id])
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   mediaId String
-  media   Media  @relation(fields: [mediaId], references: [id])
+  media   Media  @relation(fields: [mediaId], references: [id], onDelete: Cascade)
 
   comments Comment[]
   likes    Like[]

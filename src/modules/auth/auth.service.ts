@@ -346,6 +346,44 @@ const verifyEmail = async (email:string, otp:string) => {
             }
         })
     }
+
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) throw new AppError(status.NOT_FOUND, "User not found");
+
+     const sessionToken = crypto.randomUUID();
+    await prisma.session.create({
+        data: {
+        id: crypto.randomUUID(),
+        token: sessionToken,
+        userId: user.id,
+        expiresAt: new Date(Date.now() + 60 * 60 * 24 * 1000),
+        
+        },
+    });
+
+ 
+  const accessToken = tokenUtils.getAccessToken({
+    userId: user.id,
+    role: user.role,
+    name: user.name,
+    email: user.email,
+    status: user.status,
+    isDeleted: user.isDeleted,
+    emailVarified: true,
+  });
+
+  const refreshToken = tokenUtils.getRefreshToken({
+    userId: user.id,
+    role: user.role,
+    name: user.name,
+    email: user.email,
+    status: user.status,
+    isDeleted: user.isDeleted,
+    emailVarified: true,
+  });
+
+  return { accessToken, refreshToken, token: sessionToken };
 }
 
 
